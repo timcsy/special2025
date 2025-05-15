@@ -10,14 +10,6 @@ if [ ! -f "$DATABASE_PATH" ] || [ ! -s "$DATABASE_PATH" ]; then
     python manage.py migrate
     python manage.py collectstatic --no-input
 
-    # 匯入成績資料
-    if [ -f "2025score.xlsx" ]; then
-        echo "從 Excel 匯入資料中..."
-        python manage.py import_data
-    else
-        echo "警告: 2025score.xlsx 未找到!"
-    fi
-
     # 建立管理員帳號 (使用環境變數)
     echo "創建管理員帳號: $DJANGO_SUPERUSER_USERNAME"
     python manage.py createsuperuser --noinput || echo "管理員帳號可能已存在，繼續執行..."
