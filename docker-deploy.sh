@@ -1,75 +1,75 @@
 #!/bin/bash
 
-echo "=== 台南家齊高中特色招生查詢系統 Docker 部署工具 ==="
+echo "=== Tainan Jia-Chi High School Special Enrollment Query System ==="
 echo
 
-# 檢查 Docker 是否安裝
+# Check if Docker is installed
 if ! command -v docker &> /dev/null; then
-    echo "[錯誤] 找不到 Docker，請先安裝 Docker。"
-    echo "      下載: https://www.docker.com/products/docker-desktop"
+    echo "[ERROR] Docker not found. Please install Docker first."
+    echo "        Download: https://www.docker.com/products/docker-desktop"
     exit 1
 fi
 
-echo "[注意] 本部署會使用已準備好的資料庫，不會再次從Excel匯入資料。"
+echo "[NOTICE] This deployment will use the prepared database and will not import Excel data again."
 
-# 檢查 .env 檔案
+# Check .env file
 if [ ! -f .env ]; then
-    echo "[警告] 找不到 .env 檔案，將使用預設設定。"
-    echo "      建議執行之前先設定 .env 檔案。"
-    echo "      包含管理員帳號密碼等重要參數。"
+    echo "[WARNING] .env file not found, will use default settings."
+    echo "          It is recommended to set up the .env file before execution."
+    echo "          It contains important parameters like admin credentials."
     echo
-    read -p "是否繼續? [y/N] " yn
+    read -p "Continue? [y/N] " yn
     case $yn in
         [Yy]* ) ;;
         * ) exit;;
     esac
 fi
 
-# 建立必要的目錄
-echo "[資訊] 建立必要的目錄結構..."
+# Create necessary directories
+echo "[INFO] Creating necessary directory structure..."
 mkdir -p data static media
-echo "      完成。"
+echo "       Done."
 
-# 選擇操作
+# Choose operation
 echo
-echo "請選擇操作:"
-echo "[1] 啟動應用 (docker-compose up)"
-echo "[2] 停止應用 (docker-compose down)"
-echo "[3] 重建容器 (docker-compose build --no-cache)"
-echo "[4] 查看日誌 (docker-compose logs)"
-echo "[5] 備份資料庫"
-echo "[0] 退出"
+echo "Please select an operation:"
+echo "[1] Start application (docker-compose up)"
+echo "[2] Stop application (docker-compose down)"
+echo "[3] Rebuild container (docker-compose build --no-cache)"
+echo "[4] View logs (docker-compose logs)"
+echo "[5] Backup database"
+echo "[0] Exit"
 echo
 
-read -p "選擇操作 [1-5,0]: " choice
+read -p "Select operation [1-5,0]: " choice
 
 case $choice in
     1)
-        echo "[資訊] 啟動應用..."
+        echo "[INFO] Starting application..."
         docker-compose up -d
-        echo "      應用已啟動，請訪問 http://localhost:8000"
+        echo "       Application started, please visit http://localhost:8000"
         ;;
     2)
-        echo "[資訊] 停止應用..."
+        echo "[INFO] Stopping application..."
         docker-compose down
-        echo "      應用已停止。"
+        echo "       Application stopped."
         ;;
     3)
-        echo "[資訊] 重建容器..."
+        echo "[INFO] Rebuilding container..."
         docker-compose down
         docker-compose build --no-cache
-        echo "      容器已重建，請使用選項 1 啟動應用。"
+        echo "       Container rebuilt, please use option 1 to start the application."
         ;;
     4)
-        echo "[資訊] 顯示日誌..."
+        echo "[INFO] Displaying logs..."
         docker-compose logs
-        echo "      按 Ctrl+C 退出日誌查看。"
+        echo "       Press Ctrl+C to exit log view."
         ;;
     5)
         mkdir -p backups
-        echo "[資訊] 備份資料庫..."
+        echo "[INFO] Backing up database..."
         cp data/db.sqlite3 "backups/db_$(date +%Y%m%d).sqlite3"
-        echo "      資料庫已備份到 backups 目錄。"
+        echo "       Database backed up to backups directory."
         ;;
     0|*)
         exit 0
