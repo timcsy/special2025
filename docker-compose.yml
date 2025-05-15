@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    restart: always
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+      - ./static:/app/static
+      - ./media:/app/media
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      - DJANGO_SUPERUSER_USERNAME=${ADMIN_USERNAME:-admin}
+      - DJANGO_SUPERUSER_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - DJANGO_SUPERUSER_EMAIL=${ADMIN_EMAIL:-admin@example.com}
+      - DATABASE_PATH=${DATABASE_PATH:-/app/data/db.sqlite3}
+      - DEBUG=${DEBUG:-False}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}

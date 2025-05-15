@@ -52,3 +52,9 @@ ehthumbs.db
 Desktop.ini
 
 *.xlsx
+
+# Docker 資料卷目錄
+".env"
+"data/"
+"static/"
+"media/"

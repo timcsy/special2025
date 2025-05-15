@@ -1,0 +1,21 @@
+# 為了安全起見，將此檔案加入 .gitignore
+.env
+
+# Docker 資料卷目錄
+/data/
+/media/
+/static/
+
+# Python 快取檔案
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 虛擬環境
+venv/
+ENV/
+env/
+
+# 日誌檔案
+*.log
