@@ -20,5 +20,12 @@ else
 fi
 
 # 啟動 Gunicorn 伺服器
-echo "啟動服務於 0.0.0.0:8000..."
-exec gunicorn special.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 120
+echo "Starting server at 0.0.0.0:8000..."
+exec gunicorn special.wsgi:application \
+    --bind 0.0.0.0:8000 \
+    --workers 2 \
+    --threads 4 \
+    --worker-class=gthread \
+    --worker-tmp-dir /dev/shm \
+    --timeout 120 \
+    --log-level info
