@@ -9,6 +9,7 @@ services:
       - ./data:/app/data
       - ./static:/app/static
       - ./media:/app/media
+      - ./score/static:/app/score/static
     ports:
       - "${PORT:-8000}:8000"
     environment:

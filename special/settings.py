@@ -158,9 +158,10 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # 定義額外的靜態文件目錄
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'score', 'static'),
-]
+STATICFILES_DIRS = []
+# 只有在開發環境(非Docker)才使用score/static目錄
+if os.path.exists(os.path.join(BASE_DIR, 'score', 'static')):
+    STATICFILES_DIRS.append(os.path.join(BASE_DIR, 'score', 'static'))
 
 # Media files
 MEDIA_URL = 'media/'
