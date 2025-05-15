@@ -35,5 +35,8 @@ RUN chmod +x /app/entrypoint.sh
 # 對外開放 8000 連接埠
 EXPOSE 8000
 
+# 確保entrypoint腳本有正確的行尾
+RUN sed -i 's/\r$//' /app/entrypoint.sh
+
 # 設定進入點腳本
 ENTRYPOINT ["/app/entrypoint.sh"]

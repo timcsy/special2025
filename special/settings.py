@@ -159,9 +159,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # 定義額外的靜態文件目錄
 STATICFILES_DIRS = []
-# 只有在開發環境(非Docker)才使用score/static目錄
-if os.path.exists(os.path.join(BASE_DIR, 'score', 'static')):
-    STATICFILES_DIRS.append(os.path.join(BASE_DIR, 'score', 'static'))
+# 強制檢查score/static路徑是否存在，並建立必要目錄
+score_static_path = os.path.join(BASE_DIR, 'score', 'static')
+if not os.path.exists(score_static_path):
+    os.makedirs(score_static_path, exist_ok=True)
+    print(f"已建立靜態檔案目錄: {score_static_path}")
+
+# 明確添加score/static作為靜態文件源目錄
+STATICFILES_DIRS.append(score_static_path)
 
 # Media files
 MEDIA_URL = 'media/'
@@ -178,10 +183,9 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
     X_FRAME_OPTIONS = 'SAMEORIGIN'
-    
-    # WhiteNoise 設定
+      # WhiteNoise 設定 - 使用更可靠的靜態文件存儲
     WHITENOISE_MANIFEST_STRICT = False
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # 不管是否為調試模式，都禁用需要 HTTPS 的安全功能
 # 因為我們目前沒有配置 HTTPS

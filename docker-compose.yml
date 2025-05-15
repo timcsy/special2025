@@ -9,7 +9,7 @@ services:
       - ./data:/app/data
       - ./static:/app/static
       - ./media:/app/media
-      - ./score/static:/app/score/static
+      # 不要掛載 score/static，讓容器使用容器內的靜態檔案
     ports:
       - "${PORT:-8000}:8000"
     environment:
@@ -18,6 +18,8 @@ services:
       - DJANGO_SUPERUSER_EMAIL=${ADMIN_EMAIL:-admin@example.com}
       - DATABASE_PATH=${DATABASE_PATH:-/app/data/db.sqlite3}
       - DEBUG=False  # 強制設定為 False，不使用環境變數
+      - PYTHONUNBUFFERED=1  # 確保Python輸出不緩衝
+      - DJANGO_SETTINGS_MODULE=special.settings  # 明確指定設定檔
       - SECRET_KEY=${SECRET_KEY}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}
       - SKIP_IMPORT=True  # 跳過 Excel 資料匯入步驟
