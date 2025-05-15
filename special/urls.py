@@ -20,6 +20,7 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 from django.conf import settings
 from score.views import debug_csrf, get_csrf_token  # 導入調試視圖和令牌視圖
+from .debug_utils import debug_info  # 導入我們新增的調試工具
 
 urlpatterns = [
     path('admin/', admin.site.urls),

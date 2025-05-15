@@ -16,7 +16,7 @@ services:
       - DJANGO_SUPERUSER_PASSWORD=${ADMIN_PASSWORD:-admin}
       - DJANGO_SUPERUSER_EMAIL=${ADMIN_EMAIL:-admin@example.com}
       - DATABASE_PATH=${DATABASE_PATH:-/app/data/db.sqlite3}
-      - DEBUG=${DEBUG:-False}
+      - DEBUG=False  # 強制設定為 False，不使用環境變數
       - SECRET_KEY=${SECRET_KEY}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}
       - SKIP_IMPORT=True  # 跳過 Excel 資料匯入步驟

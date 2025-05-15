@@ -24,7 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-8sws_b-3mu8n(8w1z)t1=hdd*mgv1mpjwc3aj3_4bdi4$d6m%b')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+# 更準確的讀取 DEBUG 環境變數
+DEBUG_ENV = os.environ.get('DEBUG', 'True').lower()
+DEBUG = DEBUG_ENV == 'true' or DEBUG_ENV == '1' or DEBUG_ENV == 'yes'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
@@ -78,12 +80,44 @@ WSGI_APPLICATION = 'special.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# 取得資料庫路徑環境變數
+db_env_path = os.environ.get('DATABASE_PATH', 'db.sqlite3')
+
+# 處理資料庫路徑：相對路徑要轉為絕對路徑
+if db_env_path.startswith('/'):
+    # 如果是絕對路徑，保持原樣
+    db_full_path = db_env_path
+else:
+    # 如果是相對路徑，則相對於BASE_DIR處理
+    db_full_path = os.path.join(BASE_DIR, db_env_path)
+
+# 設定資料庫
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.environ.get('DATABASE_PATH', BASE_DIR / 'db.sqlite3'),
+        'NAME': db_full_path,
     }
 }
+
+# 處理資料庫路徑檢查
+db_path = DATABASES['default']['NAME']
+# 如果是絕對路徑(Linux環境)且檔案不存在
+if isinstance(db_path, str) and db_path.startswith('/') and not os.path.exists(db_path):
+    print(f"警告: 無法找到資料庫檔案: {db_path}")
+    # 嘗試在/app/data目錄(Docker環境)
+    docker_path = '/app/data/db.sqlite3'
+    if os.path.exists(docker_path):
+        print(f"找到docker環境資料庫: {docker_path}")
+        DATABASES['default']['NAME'] = docker_path
+    else:
+        # 否則使用專案目錄下的data資料夾
+        project_db_path = os.path.join(BASE_DIR, 'data', 'db.sqlite3')
+        print(f"嘗試使用專案資料庫路徑: {project_db_path}")
+        DATABASES['default']['NAME'] = project_db_path
+        # 確保路徑存在
+        if not os.path.exists(os.path.join(BASE_DIR, 'data')):
+            print("建立data資料夾")
+            os.makedirs(os.path.join(BASE_DIR, 'data'), exist_ok=True)
 
 
 # Password validation
