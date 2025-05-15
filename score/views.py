@@ -1,17 +1,40 @@
 from django.shortcuts import render
 from django.db.models import Q
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
+from django.middleware.csrf import get_token
+from django.conf import settings
+import json
 from .forms import ScoreQueryForm
 from .models import Student, FoodManagement, FashionDesign, StylingDesign
 
+@ensure_csrf_cookie
+@csrf_protect
 def index(request):
     """主頁視圖函數"""
     form = ScoreQueryForm()
+    
+    # 無論是否為調試模式，都提供必要的上下文
     context = {
         'form': form,
-        'show_result': False
+        'show_result': False,
+        'debug': settings.DEBUG,
+        'csrf_token': get_token(request)  # 確保 CSRF 令牌可用
+    }
+    
+    # 添加請求信息到上下文方便調試
+    context['debug_info'] = {
+        'method': request.method,
+        'headers': {k: v for k, v in request.headers.items()},
+        'path': request.path,
+        'is_ajax': request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     }
     
     if request.method == 'POST':
+        # 檢查是否是 AJAX 請求
+        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+        
+        # 處理表單數據
         form = ScoreQueryForm(request.POST)
         if form.is_valid():
             admit_number = form.cleaned_data['admit_number']
@@ -80,5 +103,39 @@ def index(request):
                 context['error'] = '查無此考生資料，請確認准考證號與身份證末四碼是否正確'
                 
         context['form'] = form
+        
+        # 如果是 AJAX 請求，返回 JSON 格式的響應
+        if is_ajax:
+            return JsonResponse({
+                'success': 'error' not in context,
+                'error': context.get('error', None),
+                'html': render(request, 'score/index.html', context).content.decode('utf-8') if 'error' not in context else None
+            })
     
     return render(request, 'score/index.html', context)
+
+def debug_csrf(request):
+    """CSRF 調試視圖"""
+    return JsonResponse({
+        'csrf_cookie': request.COOKIES.get('csrftoken', 'Not Found'),
+        'csrf_middleware_token': request.META.get('CSRF_COOKIE', 'Not Found'),
+        'csrf_header': request.META.get('HTTP_X_CSRFTOKEN', 'Not Found'),
+        'csrf_header_alt': request.META.get('HTTP_X_CSRF_TOKEN', 'Not Found'),
+        'trusted_origins': settings.CSRF_TRUSTED_ORIGINS,
+        'allowed_hosts': settings.ALLOWED_HOSTS,
+        'debug': settings.DEBUG,
+        'method': request.method,
+        'is_secure': request.is_secure(),
+        'host': request.get_host(),
+        'all_headers': dict(request.headers),
+        'all_cookies': request.COOKIES,
+    })
+
+def get_csrf_token(request):
+    """獲取 CSRF 令牌的視圖"""
+    # 強制生成一個新的 CSRF 令牌
+    token = get_token(request)
+    return HttpResponse(
+        json.dumps({'csrfToken': token}),
+        content_type='application/json'
+    )

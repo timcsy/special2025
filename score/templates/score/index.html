@@ -36,6 +36,14 @@
                 <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
             </div>
             {% endif %}
+            
+            {# 即使在生產環境，也允許顯示基本調試信息，但不顯示詳細信息 #}
+            {% if debug %}
+            <div class="mt-3 p-3 border border-warning">
+                <h5>DEBUG信息 (僅開發環境顯示)</h5>
+                <pre>{{ debug_info|pprint }}</pre>
+            </div>
+            {% endif %}
         </div>
     </div>
     {% endif %}
@@ -100,46 +108,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 添加表單驗證
-        const queryForm = document.getElementById('queryForm');
-        
-        queryForm.addEventListener('submit', function(e) {
-            const admitNumber = document.getElementById('{{ form.admit_number.id_for_label }}').value.trim();
-            const idLast4Digits = document.getElementById('{{ form.id_last_4_digits.id_for_label }}').value.trim();
-            
-            let isValid = true;
-            let errorMessage = '';
-            
-            if (!admitNumber) {
-                errorMessage = '請輸入准考證號碼';
-                isValid = false;
-            } else if (!idLast4Digits) {
-                errorMessage = '請輸入身份證末四碼';
-                isValid = false;
-            } else if (idLast4Digits.length !== 4) {
-                errorMessage = '身份證末四碼必須為4位數';
-                isValid = false;
-            }
-            
-            if (!isValid) {
-                e.preventDefault();
-                
-                // 建立或更新錯誤訊息元素
-                let errorDiv = document.querySelector('.error-message');
-                if (!errorDiv) {
-                    errorDiv = document.createElement('div');
-                    errorDiv.className = 'error-message mt-3';
-                    queryForm.insertAdjacentElement('afterend', errorDiv);
-                }
-                
-                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>' + errorMessage;
-                
-                // 滾動到錯誤訊息
-                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        });
-    });
-</script>
+{# 使用全局的 form-handler.js，不需要在這裡重複添加表單處理代碼 #}
 {% endblock %}

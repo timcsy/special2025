@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',  # 添加 CORS 支持
     'score',  # 添加 score 應用
 ]
 
@@ -45,6 +46,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # 添加 WhiteNoise 中間件處理靜態文件
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # 添加 CORS 中間件處理跨域請求
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -121,6 +123,11 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+# 定義額外的靜態文件目錄
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'score', 'static'),
+]
+
 # Media files
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -132,12 +139,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # 生產環境安全設定
 if not DEBUG:
-    # 啟用 HTTPS 重新導向和安全標頭
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_SSL_REDIRECT = False  # 設為 True 時需確保服務器支援 HTTPS
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    
     # 添加內容安全策略
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
@@ -146,3 +147,25 @@ if not DEBUG:
     # WhiteNoise 設定
     WHITENOISE_MANIFEST_STRICT = False
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# 不管是否為調試模式，都禁用需要 HTTPS 的安全功能
+# 因為我們目前沒有配置 HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = False  
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+
+# CSRF 設定
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://localhost:8000', 'http://127.0.0.1:8000']
+for host in ALLOWED_HOSTS:
+    if host not in ('localhost', '127.0.0.1'):
+        CSRF_TRUSTED_ORIGINS.extend([f'http://{host}', f'https://{host}'])
+
+# CSRF 和 Cookie 設定
+CSRF_USE_SESSIONS = False  # 將 CSRF 令牌存儲在 Cookie 中而不是會話中
+CSRF_COOKIE_HTTPONLY = False  # 允許 JavaScript 訪問 CSRF cookie
+CSRF_COOKIE_SAMESITE = 'Lax'  # 適中的 SameSite 設置
+
+# CORS 設定
+CORS_ALLOW_ALL_ORIGINS = True  # 允許所有來源的跨域請求
+CORS_ALLOW_CREDENTIALS = True  # 允許跨域請求攜帶認證信息
