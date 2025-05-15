@@ -54,7 +54,13 @@ Desktop.ini
 *.xlsx
 
 # Docker 資料卷目錄
-".env"
-"data/"
-"static/"
-"media/"
+.env
+data/
+static/
+media/
+backups/
+
+# Docker 相關檔案
+.dockerignore
+*.pid
+*.sock
