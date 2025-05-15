@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.9-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -23,9 +23,7 @@ RUN apt-get update && apt-get install -y \
 
 # 安裝 Python 依賴
 COPY requirements.txt .
-# 先安裝 numpy 以避免 pandas 安裝問題
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel
-RUN pip install --no-cache-dir numpy==1.24.3
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 複製專案到容器

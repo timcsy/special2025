@@ -1,16 +1,16 @@
 # Web 框架
-Django==5.0.0
+Django==4.2.7
 
 # 資料處理
-numpy==1.24.3
-pandas==2.0.3
+numpy==1.23.5
+pandas==1.5.3
 openpyxl==3.1.2
 
 # Web 服務器
-gunicorn==21.2.0
+gunicorn==20.1.0
 
 # Django 工具
-whitenoise==6.5.0
-django-debug-toolbar==4.2.0
-django-cors-headers==4.3.0
+whitenoise==6.4.0
+django-debug-toolbar==4.0.0
+django-cors-headers==4.0.0
 python-dotenv==1.0.0
