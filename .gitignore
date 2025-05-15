@@ -1,0 +1,54 @@
+# Python 暫存檔案
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Django 相關檔案
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
+
+# 靜態檔案目錄 (如果你使用 collectstatic)
+staticfiles/
+
+# 虛擬環境
+venv/
+ENV/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# IDE 檔案
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Windows 相關
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+*.xlsx
