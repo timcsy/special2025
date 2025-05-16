@@ -84,7 +84,7 @@
                                 {% for subject in subjects %}
                                 <tr>
                                     <td>{{ subject.name }}</td>
-                                    <td class="text-end subject-score">{{ subject.score|floatformat:0 }}</td>
+                                    <td class="text-end subject-score">{{ subject.score|floatformat:1 }}</td>
                                 </tr>
                                 {% endfor %}
                                 <tr class="table-active">
